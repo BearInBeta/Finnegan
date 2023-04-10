@@ -3551,10 +3551,10 @@ TextureImporter:
       name: Interiors_free_48x48_161
       rect:
         serializedVersion: 2
-        x: 432
-        y: 1694
-        width: 144
-        height: 119
+        x: 529
+        y: 1753
+        width: 47
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
