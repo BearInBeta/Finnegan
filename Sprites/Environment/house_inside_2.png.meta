@@ -1010,10 +1010,10 @@ TextureImporter:
       name: house_inside_2_40
       rect:
         serializedVersion: 2
-        x: 453
-        y: 128
-        width: 54
-        height: 113
+        x: 456
+        y: 161
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1550,13 +1550,13 @@ TextureImporter:
       house_inside_2_35: -404193807
       house_inside_2_39: -669869478
       house_inside_2_32: -1155828368
-      house_inside_2_37: -605740651
-      house_inside_2_7: 2119588386
-      house_inside_2_61: 750887891
-      house_inside_2_59: -572589824
-      house_inside_2_18: 681851630
-      house_inside_2_38: -663427753
       house_inside_2_44: 293370363
+      house_inside_2_18: 681851630
+      house_inside_2_7: 2119588386
+      house_inside_2_37: -605740651
+      house_inside_2_59: -572589824
+      house_inside_2_61: 750887891
+      house_inside_2_38: -663427753
       house_inside_2_22: 1864491558
       house_inside_2_10: -1084415231
       house_inside_2_17: 1671336109
