@@ -11,9 +11,16 @@ public class Controller : MonoBehaviour
     float moveLimiter = 0.7f;
     Animator anim;
     public float runSpeed = 20.0f;
-
+    [SerializeField] GameObject journal, Menu;
     void Start()
     {
+        if (PlayerPrefs.HasKey("posx"))
+            transform.position = new Vector3(PlayerPrefs.GetFloat("posx"), transform.position.y, transform.position.z);
+
+        if (PlayerPrefs.HasKey("posy"))
+            transform.position = new Vector3( transform.position.x, PlayerPrefs.GetFloat("posy"), transform.position.z);
+
+        journal.SetActive(false);
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
@@ -21,6 +28,9 @@ public class Controller : MonoBehaviour
 
     void Update()
     {
+        PlayerPrefs.SetFloat("posx", transform.position.x);
+        PlayerPrefs.SetFloat("posy", transform.position.y);
+
         if (GameObject.FindGameObjectWithTag("dialogue") !=  null && GameObject.FindGameObjectWithTag("dialogue").activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.Return))
@@ -29,6 +39,28 @@ public class Controller : MonoBehaviour
             }
             return;
         }
+
+        if (journal.activeInHierarchy)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                journal.SetActive(false);
+            }
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Menu.SetActive(!Menu.activeInHierarchy);
+        }
+        if (Menu.activeInHierarchy)
+            return;
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            journal.SetActive(true);
+        }
+
+        
         // Gives a value between -1 and 1
         horizontal = Input.GetAxisRaw("Horizontal"); // -1 is left
         vertical = Input.GetAxisRaw("Vertical"); // -1 is down

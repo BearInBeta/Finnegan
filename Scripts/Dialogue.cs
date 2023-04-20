@@ -6,28 +6,86 @@ using UnityEngine;
 
 public class Dialogue : MonoBehaviour
 {
-    [SerializeField] TextAsset csvFile; // assign the csv file from the Inspector
+    [SerializeField] TextAsset csvFile, infoFile; // assign the csv file from the Inspector
+    private List<string> stringList = new List<string>();
+    private List<string> indexList = new List<string>();
+    [SerializeField] GameObject journal;
+    [SerializeField] TMP_InputField journalField;
+
     string[,] csvData;
     string[] searchArray;
     [SerializeField] TypeWriter typewriter;
     [SerializeField] TMP_InputField inputField;
-    [SerializeField] GameObject next, exit;
+    [SerializeField] GameObject next, exit, ask;
     public int character;
     [SerializeField] GameObject dialogueBox;
     [SerializeField] TMP_Text placeholder;
     // Start is called before the first frame update
     void Start()
     {
+      
+        if(PlayerPrefs.HasKey("journal"))
+            journalField.text = PlayerPrefs.GetString("journal");
         endDialogue();
         csvData = ReadCSVFile(csvFile);
         searchArray = SplitFirstColumn(csvData);
+        string[] rows = infoFile.text.Split('\n');
+
+        for (int i = 0; i < rows.Length; i++)
+        {
+            if (rows[i].IndexOf(",") > -1)
+            {
+                string[] columns = rows[i].Split(',');
+                stringList.Add(columns[1].Replace("/c",",")); // add column data to the list
+                indexList.Add(columns[0]);
+            }
+        }
+
+        if (!PlayerPrefs.HasKey("continue") || PlayerPrefs.GetInt("continue") != 1)
+        {
+            PlayerPrefs.SetInt("continue", 1);
+            showInfo("tutorial");
+        }
         // do something with the csvData array...
     }
+    public void saveJournal()
+    {
+        PlayerPrefs.SetString("journal", journalField.text);
+    }
+    public void showInfo(string s)
+    {
+        character = 0;
+        showDialogue();
+        ask.SetActive(false);
+        inputField.gameObject.SetActive(false);
+        typewriter.clip = 0;
+        typewriter.StartTyping(getInfo(s));
+    }
+
+    public void addToJournal()
+    {
+        journal.SetActive(true);
+        journalField.text += "\n\n" + typewriter.lastWritten;
+        saveJournal();
+    }
+    public string getInfo(string s)
+    {
+        return getInfo(indexList.IndexOf(s));
+    }
+
+    public string getInfo(int i)
+    {
+        return stringList[i];
+    }
+
     public void showDialogue()
     {
-        if (character == 6)
+        ask.SetActive(true);
+        inputField.gameObject.SetActive(true);
+
+        if (character == 10)
         {
-            placeholder.text = "Enter the password. It's the initials of each person in the order they were seated.";
+            placeholder.text = "A keypad, with a paper that reads \"Whyauly'z Ipyaokhf\". Enter PIN?";
         }
         else
         {
@@ -44,11 +102,16 @@ public class Dialogue : MonoBehaviour
     }
     public void endDialogue()
     {
+        typewriter.stopTyping();
+        typewriter.textToWrite = "";
+        typewriter.lastWritten = "";
+        StopCoroutine(typewriter.coroutine);
         next.SetActive(false);
         exit.SetActive(true);
         emptyField();
         dialogueBox.SetActive(false);
         typewriter.textMeshPro.text = "";
+       
     }
     public void nextDialogue()
     {
@@ -60,21 +123,32 @@ public class Dialogue : MonoBehaviour
     }
     public void startDialogue()
     {
-
-        if (typewriter.textToWrite != "")
+        typewriter.clip = character;
+        if (typewriter.lastWritten != "")
         {
-            nextDialogue();
-        }
-        else if(inputField.text != "" && character == 6)
-        {
-            if(inputField.text.ToLower() == "cbjrl")
+            if (typewriter.isTyping)
             {
-                typewriter.textToWrite = "Correct Password.*Thank you for testing my prototype.*Your feedback would be much appreciated.";
+                typewriter.stopTyping();
+            }
+            else
+            {
+                if (typewriter.textToWrite != "")
+                    nextDialogue();
+                else
+                    endDialogue();
+            }
+        }
+        else if(inputField.text != "" && character == 10)
+        {
+            typewriter.clip = 0;
+            if (inputField.text.ToLower() == "0305")
+            {
+                typewriter.textToWrite = "The PIN is correct. Unfortunately, this is where the prototype ends.+Thank you for testing my prototype.*Your feedback would be much appreciated.";
                 nextDialogue();
             }
             else
             {
-                typewriter.textToWrite = "Wrong password. Try again.";
+                typewriter.textToWrite = "Wrong PIN.";
                 nextDialogue();
             }
         }else if(inputField.text != "" && character < csvData.GetLength(1) && character > 0)

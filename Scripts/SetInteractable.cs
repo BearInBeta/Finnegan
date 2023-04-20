@@ -7,7 +7,9 @@ public class SetInteractable : MonoBehaviour
     Interaction interaction;
     public int index;
     public int intData;
+    public string stringData;
     GameObject dialgoue;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,13 +22,17 @@ public class SetInteractable : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.tag == "Player")
         {
+
             if(index == 0)
             {
                 dialogueInteraction(intData);
+            }else if (index == 1)
+            {
+                infoInteraction(stringData);
             }
         }
     }
@@ -43,15 +49,41 @@ public class SetInteractable : MonoBehaviour
     }
     public void dialogueInteraction(int character)
     {
-        if(interaction != null)
+        if(interaction != null && interaction.coroutine == null)
         interaction.coroutine = dialogueCoroutine(character);
+    }
+    public void infoInteraction(string item)
+    {
+        if (interaction != null && interaction.coroutine == null)
+            interaction.coroutine = infoCoroutine(item);
     }
 
     public IEnumerator dialogueCoroutine(int character)
     {
-        GameObject.FindGameObjectWithTag("scripts").GetComponent<Dialogue>().character = character;
+        if (GameObject.FindGameObjectWithTag("dialogue") != null && GameObject.FindGameObjectWithTag("dialogue").activeInHierarchy)
+        {
 
-        GameObject.FindGameObjectWithTag("scripts").GetComponent<Dialogue>().showDialogue();
+        }
+        else
+        {
+            GameObject.FindGameObjectWithTag("scripts").GetComponent<Dialogue>().character = character;
+
+            GameObject.FindGameObjectWithTag("scripts").GetComponent<Dialogue>().showDialogue();
+
+
+        }
+        interaction.coroutine = dialogueCoroutine(character);
         yield return null;
+
+    }
+
+    public IEnumerator infoCoroutine(string item)
+    {
+        
+
+            GameObject.FindGameObjectWithTag("scripts").GetComponent<Dialogue>().showInfo(item);
+            interaction.coroutine = infoCoroutine(item);
+            yield return null;
+
     }
 }
